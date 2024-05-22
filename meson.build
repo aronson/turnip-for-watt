@@ -1,9 +1,9 @@
 # Change these to suit your project, if you want.
 project(
-  'gba-meson', 'c',
+  'turnip-for-watt', 'c',
   version: '0.10.0',
   license: 'Zlib',
-  meson_version: '>=0.60.0',
+  meson_version: '>=1.3.0',
   default_options: ['buildtype=debugoptimized', 'warning_level=2', 'c_std=c99', 'cpp_std=c++20'])
 
 # Set up recommended compiler and linker flags.
@@ -16,7 +16,7 @@ if get_option('dev')
 endif
 
 # The name of your project.
-name = 'gba-meson-template'
+name = 'turnip'
 
 # All of the source files used by your project.
 sources = [
