@@ -37,6 +37,8 @@ if ld_h.stdout().contains('--no-warn-rwx-segments')
   link_args += '-Wl,--no-warn-rwx-segments'
 endif
 
+link_args += '-Wl,--print-memory-usage'
+
 # Use libc_nano if available.
 if cc.find_library('c_nano', required: false).found()
   link_args += '-specs=nano.specs'

@@ -1,6 +1,6 @@
 # Change these to suit your project, if you want.
 project(
-  'turnip-for-watt', 'c',
+  'turnip-for-watt', 'c', 'cpp',
   version: '0.10.0',
   license: 'Zlib',
   meson_version: '>=1.3.0',
@@ -9,18 +9,14 @@ project(
 # Set up recommended compiler and linker flags.
 subdir('meson/toolchain')
 
-# If you're working on meson-gba
-if get_option('dev')
-  subdir('meson/dev')
-  subdir_done()
-endif
-
 # The name of your project.
 name = 'turnip'
 
 # All of the source files used by your project.
 sources = [
-  'src/main.c',
+  'source/main.cpp',
+  'source/physics.cpp',
+  'source/scene.cpp',
 ]
 
 # All of the include directories used by your project.
@@ -28,18 +24,39 @@ includes = [
   'include',
 ]
 
+grit = find_program('grit')
+
 # Dependencies. gba-meson provides a large number of GBA development libraries.
 # Check them out and add the ones you want to use to this list.
 dependencies = [
   dependency('minrt'),
+  dependency('libseven'),
+  dependency('libutil'),
+  dependency('libsavgba'),
+  dependency('libtonc'),
+  dependency('agbabi'),
+  dependency('posprintf'),
+  dependency('maxmod'),
 ]
+
+jimmy = files('jimmy.bmp')
+
+sprite_bin = custom_target(
+  'Generate sprites',
+  input : jimmy,
+  output : ['jimmy.h', 'jimmy.s'],
+  command : [
+    grit, '@INPUT@', '-gB8', '-Mh2', '-Mw2',
+  ],
+  build_by_default : true)
 
 # The main executable for your game. We give it a '.elf' file extension,
 # just to make the file more easy to differentiate from a raw ROM.
 elf = executable(
   name,
-  sources,
+  sources + sprite_bin,
   include_directories: includes,
+  link_args: '-specs=nosys.specs',
   dependencies: dependencies,
   name_suffix: 'elf')
 
