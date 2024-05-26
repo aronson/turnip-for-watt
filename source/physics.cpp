@@ -20,15 +20,22 @@ void PhysicsData::applyInputVelocities() {
     isMidAir = posY != FLOOR_Y;
 
     if (inputKeysPressed(KEY_A, keys) && !isMidAir) {
-        velY = -JUMP_SPEED;
         airTime = 0;
+    }
+
+    if (inputKeysDown(KEY_A, keys) && airTime < 10) {
+        velY = -JUMP_SPEED;
     }
 }
 
 void PhysicsData::moveSpriteHorizontally() {
-    posX += velX;
-    posX = std::min(MAX_X_POS, posX);
-    posX = std::max((u8)0, posX);
+    if (posX + velX < 0) {
+        posX = 0;
+    } else if (posX + velX > MAX_X_POS) {
+        posX = MAX_X_POS;
+    } else {
+        posX += velX;
+    }
 }
 
 void PhysicsData::moveSpriteVertically() {

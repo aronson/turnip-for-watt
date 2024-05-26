@@ -4,10 +4,10 @@
 
 #define FLOOR_Y (160-16)
 const i8 WALK_SPEED = 2;
-const u8 JUMP_SPEED = 10;
+const u8 JUMP_SPEED = 7;
 const u8 GRAVITY = 1;
 const u8 MAX_X_POS = 240 - 16;
-const u8 MAX_Y_VEL = 5;
+const u8 MAX_Y_VEL = 7;
 
 typedef struct PhysicsData {
     int facingRight{};
