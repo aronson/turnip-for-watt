@@ -1,20 +1,20 @@
-#import "def.hpp"
-#import "physics.hpp"
+#include "def.hpp"
+#include "physics.hpp"
 
 void PhysicsData::applyInputVelocities() {
     // Grab input
-    const int axisX = inputAxisX(keys);
+    i8 axisX = inputAxisX(keys);
+
+    // Check if running
+    if(inputKeysDown(KEY_B, keys)) {
+        axisX *= 2;
+    }
 
     // Update direction and velocity based on user input
-    if (axisX == -1) {
-        facingRight = 0;
-        velX = -WALK_SPEED;
-    } else if (axisX == 1) {
-        facingRight = 1;
-        velX = WALK_SPEED;
-    } else {
-        velX = 0;
+    if (axisX != 0) {
+        facingRight = axisX > 0 ? 1 : 0;
     }
+    velX = WALK_SPEED * axisX;
 
     // Test if actor is in the air
     isMidAir = posY != FLOOR_Y;
@@ -33,7 +33,7 @@ void PhysicsData::moveSpriteHorizontally() {
 
 void PhysicsData::moveSpriteVertically() {
     velY += GRAVITY;
-    velY = std::min((s16)MAX_Y_VEL, velY);
+    velY = std::min((i16)MAX_Y_VEL, velY);
 
     posY += velY;
 

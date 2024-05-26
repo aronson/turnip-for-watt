@@ -14,6 +14,7 @@ name = 'turnip'
 
 # All of the source files used by your project.
 sources = [
+  'source/actor.cpp',
   'source/main.cpp',
   'source/physics.cpp',
   'source/scene.cpp',
@@ -46,7 +47,7 @@ sprite_bin = custom_target(
   input : jimmy,
   output : ['jimmy.h', 'jimmy.s'],
   command : [
-    grit, '@INPUT@', '-gB8', '-Mh2', '-Mw2',
+    grit, '@INPUT@', '-gB8', '-Mh2', '-Mw2', '-pS'
   ],
   build_by_default : true)
 

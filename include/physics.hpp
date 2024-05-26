@@ -1,11 +1,10 @@
 #pragma once
-#import "seven/input.h"
-#define LIBSEVEN_COMPATIBLE
-#import "seven/types.h"
+#include "seven/input.h"
+#include "seven/types.h"
 
 #define FLOOR_Y (160-16)
-const u8 WALK_SPEED = 2;
-const u8 JUMP_SPEED = 5;
+const i8 WALK_SPEED = 2;
+const u8 JUMP_SPEED = 10;
 const u8 GRAVITY = 1;
 const u8 MAX_X_POS = 240 - 16;
 const u8 MAX_Y_VEL = 5;
@@ -14,8 +13,8 @@ typedef struct PhysicsData {
     int facingRight{};
     u8 posX{};
     u8 posY{};
-    s16 velX{};
-    s16 velY{};
+    i16 velX{};
+    i16 velY{};
     bool isMidAir = false;
     int airTime{};
     void updatePhysics();

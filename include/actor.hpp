@@ -3,6 +3,7 @@
 #include "seven/types.h"
 #include "seven/memory.h"
 #include "seven/video.h"
+#include "seven/attributes.h"
 #include "seven/video/types.h"
 #include "agbabi.h"
 #include "def.hpp"
@@ -18,11 +19,13 @@ typedef Tile TileBlock[256];
 #define WALKING_START_FRAME 32
 #define MIDAIR_START_FRAME 56
 
-const int ATTRIBUTE_RIGHT_MASK = 0x4000;
-const int ATTRIBUTE_LEFT_MASK = 0x5000;
+const int ATTR1_SQUARE = 0x4000;
+const int ATTR1_FLIP_HORIZ = 0x1000;
+const int ATTR1_FACING_LEFT = ATTR1_SQUARE + ATTR1_FLIP_HORIZ;
+const int ATTR1_FACING_RIGHT = ATTR1_SQUARE;
 const int ATTR0_8BPP = 0x2000;
 
-class Jimmy {
+class Actor {
 private:
     unsigned int firstAnimCycleFrame = 0;
     unsigned int animFrame = 0;
@@ -33,63 +36,9 @@ public:
     Object *immediate{};
     PhysicsData physics{};
 
-    void init(Object *oam, Object *buffer) {
-        immediate = oam;
-        shadow = buffer;
-
-        // Register default OAM data
-        shadow->attr0 = ATTR0_8BPP;
-        shadow->attr1 = ATTRIBUTE_RIGHT_MASK;
-        shadow->attr2 = 0;
-
-        physics.facingRight = 1;
-        physics.posY = FLOOR_Y;
-    }
-
-    void draw() {
-        if (!initialized) {
-            // Set up main sprite graphics data
-            __agbabi_memcpy2(MEM_TILE[4][0], jimmyTiles, jimmyTilesLen);
-            __agbabi_memcpy2(MEM_PALBLOCK[1], jimmyPal, jimmyPalLen);
-            initialized = true;
-        }
-
-        // Always copy actor in the draw step to OAM
-        __agbabi_memcpy2(immediate, shadow, sizeof(Object));
-    }
-
-    void update() {
-        animate();
-    }
-
-    void animate() {
-        shadow->attr0 = ATTR0_8BPP + physics.posY;
-        shadow->attr1 = physics.posX +
-                        (physics.facingRight ? ATTRIBUTE_RIGHT_MASK : ATTRIBUTE_LEFT_MASK);
-
-        if (physics.isMidAir) {
-            firstAnimCycleFrame = MIDAIR_START_FRAME;
-            animFrame = physics.velY > 0 ? 1 : 0;
-        } else {
-            if (physics.velX != 0) {
-                firstAnimCycleFrame = WALKING_START_FRAME;
-                if (!(animTimer++ % 8)) {
-                    ++animFrame;
-                    animFrame %= 3;
-                }
-            } else {
-                firstAnimCycleFrame = 0;
-                if (!(animTimer++ % 8)) {
-                    ++animFrame;
-                    animFrame %= 4;
-                }
-            }
-        }
-
-        shadow->attr2 = firstAnimCycleFrame + (animFrame * 8);
-    }
-
-    void control() {
-        physics.updatePhysics();
-    }
+    void init(Object *oam, Object *buffer);
+    ARM_CODE IWRAM_CODE void draw();
+    void update();
+    void animate();
+    void control();
 };

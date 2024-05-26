@@ -1,4 +1,5 @@
 #include "seven/video/memory.h"
+#include "seven/attributes.h"
 #include "def.hpp"
 #include "scene.hpp"
 #include "jimmy.h"
@@ -7,7 +8,7 @@ void GameScene::init() {
     jimmy.init(&MEM_SPRITE[0], jimmyShadow);
 }
 
-void GameScene::draw() {
+ARM_CODE IWRAM_CODE void GameScene::draw() {
     jimmy.draw();
 }
 

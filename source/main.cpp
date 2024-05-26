@@ -2,16 +2,17 @@
 #include "seven/irq.h"
 #include "seven/bios.h"
 #include "seven/video.h"
+#include "seven/attributes.h"
+#include "seven/waitstate.h"
 
-#include "liba_gba.h"
 #include "scene.hpp"
 
 using namespace hsm;
 
-StateMachine stateMachine;
-InputState keys = inputNew();
+EWRAM_DATA StateMachine stateMachine;
+EWRAM_DATA InputState keys = inputNew();
 std::shared_ptr<Scene> scene = nullptr;
-LogInterface loggerType = LOGIF_CUSTOM;
+EWRAM_DATA LogInterface loggerType = LOGIF_CUSTOM;
 
 bool canDraw = true;
 
@@ -32,17 +33,19 @@ struct GameStates {
     };
 };
 
+ARM_CODE IWRAM_CODE void onVBlank(u16 _) {
+    // mmVBlank();
+    if (canDraw) {
+        canDraw = false;
+        if (scene) scene->draw();
+    }
+    // mmFrame();
+}
+
 void initializeStateMachine() {
     stateMachine.SetDebugTraceLevel(hsm::TraceLevel::Basic);
     stateMachine.Initialize<GameStates::RootState>(nullptr);
-    irqHandlerSet(IRQ_VBLANK, [](u16 _) {
-        // mmVBlank();
-        if (canDraw) {
-            canDraw = false;
-            if (scene) scene->draw();
-        }
-        // mmFrame();
-    });
+    irqHandlerSet(IRQ_VBLANK, onVBlank);
 }
 
 void alignInitialVideoTiming() {
@@ -51,7 +54,6 @@ void alignInitialVideoTiming() {
 }
 
 void platformInit() {
-
     //testSaveMedia();
 
     REG_DISPSTAT |= (1 << 3) | (1 << 4);
@@ -71,7 +73,7 @@ void platformInit() {
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "EndlessLoop"
-int main() {
+IWRAM_CODE int main() {
 
     platformInit();
 
