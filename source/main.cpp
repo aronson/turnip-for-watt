@@ -77,10 +77,10 @@ int main() {
 
     initializeStateMachine();
     do {
-        biosVBlankIntrWait();
         stateMachine.ProcessStateTransitions();
         stateMachine.UpdateStates();
         canDraw = true;
+        biosVBlankIntrWait();
     } while (true);
 }
 #pragma clang diagnostic pop

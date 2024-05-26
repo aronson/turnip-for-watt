@@ -34,7 +34,6 @@ class GameScene final : public Scene{
     Object spriteShadowBuffer[128]{};
     Object *jimmyShadow = &spriteShadowBuffer[0];
 
-    bool initialized = false;
     Jimmy jimmy;
 
     std::shared_ptr<Scene> previousScene() final {return nullptr;}

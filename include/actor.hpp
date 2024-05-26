@@ -18,6 +18,10 @@ typedef Tile TileBlock[256];
 #define WALKING_START_FRAME 32
 #define MIDAIR_START_FRAME 56
 
+const int ATTRIBUTE_RIGHT_MASK = 0x4000;
+const int ATTRIBUTE_LEFT_MASK = 0x5000;
+const int ATTR0_8BPP = 0x2000;
+
 class Jimmy {
 private:
     unsigned int firstAnimCycleFrame = 0;
@@ -34,8 +38,8 @@ public:
         shadow = buffer;
 
         // Register default OAM data
-        shadow->attr0 = 0x2000;
-        shadow->attr1 = 0x4000;
+        shadow->attr0 = ATTR0_8BPP;
+        shadow->attr1 = ATTRIBUTE_RIGHT_MASK;
         shadow->attr2 = 0;
 
         physics.facingRight = 1;
@@ -59,28 +63,30 @@ public:
     }
 
     void animate() {
-        unsigned int originalFrame = firstAnimCycleFrame;
-        //update velocity for gravity
+        shadow->attr0 = ATTR0_8BPP + physics.posY;
+        shadow->attr1 = physics.posX +
+                        (physics.facingRight ? ATTRIBUTE_RIGHT_MASK : ATTRIBUTE_LEFT_MASK);
+
         if (physics.isMidAir) {
             firstAnimCycleFrame = MIDAIR_START_FRAME;
             animFrame = physics.velY > 0 ? 1 : 0;
         } else {
             if (physics.velX != 0) {
                 firstAnimCycleFrame = WALKING_START_FRAME;
-                ++animFrame;
-                animFrame %= 3;
+                if (!(animTimer++ % 8)) {
+                    ++animFrame;
+                    animFrame %= 3;
+                }
             } else {
                 firstAnimCycleFrame = 0;
-                ++animFrame;
-                animFrame %= 4;
+                if (!(animTimer++ % 8)) {
+                    ++animFrame;
+                    animFrame %= 4;
+                }
             }
         }
 
-        shadow->attr0 = 0x2000 + physics.posY;
-        shadow->attr1 = physics.posX +
-                        (physics.facingRight ? ATTRIBUTE_RIGHT_MASK : ATTRIBUTE_LEFT_MASK);
-        if (!(animTimer++ % 8) || (originalFrame != firstAnimCycleFrame))
-            shadow->attr2 = firstAnimCycleFrame + (animFrame * 8);
+        shadow->attr2 = firstAnimCycleFrame + (animFrame * 8);
     }
 
     void control() {
