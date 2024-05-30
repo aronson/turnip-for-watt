@@ -1,11 +1,15 @@
 #include "actor.hpp"
+#include "jimmyShared.h"
+#include "dorothy.h"
+#include "dorothyShared.h"
+#include "vram_sections.hpp"
 
 void Actor::init(Object *oam, Object *buffer) {
     immediate = oam;
     shadow = buffer;
 
     // Register default OAM data
-    shadow->attr0 = ATTR0_8BPP;
+    shadow->attr0 = ATTR0_4BPP;
     shadow->attr1 = ATTR1_FACING_RIGHT;
     shadow->attr2 = 0;
 
@@ -16,8 +20,8 @@ void Actor::init(Object *oam, Object *buffer) {
 void Actor::draw() {
     if (!initialized) {
         // Set up main sprite graphics data
-        __agbabi_memcpy2(MEM_TILE[4][0], jimmyTiles, jimmyTilesLen);
-        __agbabi_memcpy2(MEM_PALBLOCK[1], SharedPal, SharedPalLen);
+        __agbabi_memcpy2((void *)&vram.spriteblocks, jimmyTiles, jimmyTilesLen);
+        __agbabi_memcpy2(MEM_PALETTE_OAM, jimmySharedPal, jimmySharedPalLen);
         initialized = true;
     }
 
@@ -30,7 +34,7 @@ void Actor::update() {
 }
 
 void Actor::animate() {
-    shadow->attr0 = ATTR0_8BPP + physics.posY;
+    shadow->attr0 = ATTR0_4BPP + physics.posY;
     shadow->attr1 = physics.posX +
                     (physics.facingRight ? ATTR1_FACING_RIGHT : ATTR1_FACING_LEFT);
 
@@ -53,7 +57,7 @@ void Actor::animate() {
         }
     }
 
-    shadow->attr2 = firstAnimCycleFrame + (animFrame * 8);
+    shadow->attr2 = firstAnimCycleFrame + (animFrame * 4);
 }
 
 void Actor::control() {

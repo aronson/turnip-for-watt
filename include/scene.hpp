@@ -2,6 +2,7 @@
 #include <memory>
 #include "physics.hpp"
 #include "actor.hpp"
+#include "vram_sections.hpp"
 
 class Scene{
 public:
@@ -35,6 +36,9 @@ class GameScene final : public Scene{
     Object *jimmyShadow = &spriteShadowBuffer[0];
 
     Actor jimmy;
+
+    BackgroundAllocation allocation;
+    bool backdropInitialized = false;
 
     std::shared_ptr<Scene> previousScene() final {return nullptr;}
 

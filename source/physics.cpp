@@ -3,7 +3,7 @@
 
 void PhysicsData::applyInputVelocities() {
     // Grab input
-    i8 axisX = inputAxisX(keys);
+    fixed32 axisX = inputAxisX(keys);
 
     // Check if running
     if(inputKeysDown(KEY_B, keys)) {
@@ -32,17 +32,17 @@ void PhysicsData::moveSpriteHorizontally() {
     if (posX + velX < 0) {
         posX = 0;
     } else if (posX + velX > MAX_X_POS) {
-        posX = MAX_X_POS;
+        posX = (short)(MAX_X_POS);
     } else {
-        posX += velX;
+        posX += (short)velX;
     }
 }
 
 void PhysicsData::moveSpriteVertically() {
     velY += GRAVITY;
-    velY = std::min((i16)MAX_Y_VEL, velY);
+    velY = std::min(MAX_Y_VEL, velY);
 
-    posY += velY;
+    posY += (short)velY;
 
     if (posY >= FLOOR_Y) {
         posY = FLOOR_Y;

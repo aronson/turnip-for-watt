@@ -1,0 +1,6 @@
+[submodule "subprojects/gba-tools"]
+	path = subprojects/gba-tools
+	url = https://github.com/aronson/gba-tools.git
+[submodule "subprojects/realnumb"]
+	path = subprojects/realnumb
+	url = https://github.com/louis-langholtz/realnumb.git

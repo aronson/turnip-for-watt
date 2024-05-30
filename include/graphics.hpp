@@ -1,0 +1,2 @@
+void oamInitAll();
+void clearOam();
